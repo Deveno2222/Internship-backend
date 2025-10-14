@@ -8,6 +8,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken
+from .permissions import IsTeacher
+from rest_framework import generics
+from .models import User
+from .serializers import CustomUserSerializer
 
 # Create your views here.
 class UserInfoView(RetrieveUpdateAPIView):
@@ -76,3 +80,9 @@ class CookieTokenRefreshView(TokenRefreshView):
             return response
         except InvalidToken:
             return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class StudentListView(generics.ListAPIView):
+    queryset = User.objects.filter(role="student")
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsTeacher]
